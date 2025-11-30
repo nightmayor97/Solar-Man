@@ -164,7 +164,7 @@ const GeminiPage: React.FC = () => {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Prompt</label>
-                    <textarea value={videoPrompt} onChange={e => setVideoPrompt(e.target.value)} rows={3} placeholder="e.g., What is the condition of the roof panels shown in the video?" className="mt-1 block w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary" />
+                    <textarea value={videoPrompt} onChange={e => setVideoPrompt(e.target.value)} rows={3} placeholder="e.g., What is the condition of the roof panels shown in the video?" className="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary" />
                 </div>
                 <button onClick={handleVideoAnalysis} disabled={isVideoLoading} className="w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark disabled:bg-gray-400">
                     {isVideoLoading ? 'Analyzing...' : 'Analyze Video'}
@@ -182,7 +182,10 @@ const GeminiPage: React.FC = () => {
     const renderSearch = () => (
         <Card title="Web Search with Google Search Grounding">
             <div className="space-y-4">
-                <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Enter your search query..." className="w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary" />
+                 <div>
+                    <label htmlFor="web-search" className="block text-sm font-medium text-gray-700">Search Query</label>
+                    <input id="web-search" type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="mt-1 w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary" />
+                </div>
                 <button onClick={handleSearch} disabled={isSearchLoading} className="w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark disabled:bg-gray-400">
                     {isSearchLoading ? 'Searching...' : 'Search'}
                 </button>
@@ -212,7 +215,10 @@ const GeminiPage: React.FC = () => {
         <Card title="Place Finder with Google Maps Grounding">
             {locationError && <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">{locationError}</div>}
              <div className="space-y-4">
-                <input type="text" value={mapsQuery} onChange={e => setMapsQuery(e.target.value)} placeholder="e.g., Find nearby hardware stores" className="w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary" />
+                 <div>
+                    <label htmlFor="map-search" className="block text-sm font-medium text-gray-700">Find Places</label>
+                    <input id="map-search" type="text" value={mapsQuery} onChange={e => setMapsQuery(e.target.value)} className="mt-1 w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary" />
+                </div>
                 <button onClick={handleMapsSearch} disabled={isMapsLoading || !location} className="w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark disabled:bg-gray-400">
                     {isMapsLoading ? 'Finding...' : 'Find Places'}
                 </button>

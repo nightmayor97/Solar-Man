@@ -1,0 +1,17 @@
+{
+  "name": "Solar Man Portal",
+  "short_name": "SolarMan",
+  "description": "A customer and admin portal for Solar Man - Softlogic Energy to manage solar system details, warranties, documents, and tutorials.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

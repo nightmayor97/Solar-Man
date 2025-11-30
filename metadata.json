@@ -1,5 +1,5 @@
 {
-  "name": "Solar Man Portal",
+  "name": "New Solar Man Portal",
   "description": "A customer and admin portal for Solar Man - Softlogic Energy to manage solar system details, warranties, documents, and tutorials.",
   "requestFramePermissions": [
     "geolocation"

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import Card from '../../components/Card';
 import { useAppContext } from '../../App';
 import type { Ticket } from '../../types';
-import Modal from '../../components/Modal';
-import { PlusIcon, TicketIcon, TrashIcon } from '../../components/Icons';
+import { PlusIcon, TrashIcon, ArrowLeftIcon, UserIcon, BotIcon, SendIcon } from '../../components/Icons';
 
 const getStatusColor = (status: Ticket['status']) => {
     switch (status) {
@@ -13,7 +12,7 @@ const getStatusColor = (status: Ticket['status']) => {
     }
 };
 
-const TicketDetailsModal: React.FC<{ ticket: Ticket; onClose: () => void; }> = ({ ticket, onClose }) => {
+const TicketDetailsView: React.FC<{ ticket: Ticket; onBack: () => void; }> = ({ ticket, onBack }) => {
     const { tickets, addTicketMessage } = useAppContext();
     const [reply, setReply] = useState('');
 
@@ -27,46 +26,97 @@ const TicketDetailsModal: React.FC<{ ticket: Ticket; onClose: () => void; }> = (
     };
 
     return (
-        <Modal isOpen={true} onClose={onClose} title={`Ticket #${currentTicket.id.slice(-6)}`}>
-            <div className="space-y-4">
-                <div>
-                    <h3 className="font-bold text-secondary-dark">{currentTicket.subject}</h3>
-                    <p className="text-sm text-gray-500">
-                        Status: <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(currentTicket.status)}`}>{currentTicket.status}</span>
-                        {' | '}
-                        Created: {new Date(currentTicket.createdAt).toLocaleString()}
-                    </p>
+        <div className="h-full flex flex-col">
+            <div className="mb-4">
+                <button onClick={onBack} className="flex items-center text-sm font-semibold text-gray-600 hover:text-secondary-dark">
+                    <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                    Back to Tickets
+                </button>
+            </div>
+            
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Conversation Panel */}
+                <div className="lg:col-span-2 bg-white rounded-lg shadow-md flex flex-col min-h-[60vh]">
+                    <div className="p-4 border-b">
+                        <h2 className="text-xl font-bold text-secondary-dark">{currentTicket.subject}</h2>
+                    </div>
+                    {/* Messages */}
+                    <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                        {currentTicket.messages.map(msg => (
+                            <div key={msg.id} className={`flex items-start gap-3 ${msg.sender === 'customer' ? 'flex-row-reverse' : ''}`}>
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${msg.sender === 'customer' ? 'bg-gray-300' : 'bg-secondary-light'}`}>
+                                    {msg.sender === 'customer' ? <UserIcon className="w-6 h-6 text-gray-600" /> : <BotIcon className="w-6 h-6 text-white" />}
+                                </div>
+                                <div className={`p-3 rounded-lg max-w-lg ${msg.sender === 'customer' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-800'}`}>
+                                    <p className="text-sm">{msg.text}</p>
+                                    <p className="text-xs text-right opacity-70 mt-1">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Reply Form */}
+                    {currentTicket.status !== 'Closed' && (
+                        <div className="p-4 bg-gray-50 border-t">
+                            <form onSubmit={handleReply} className="relative">
+                                <textarea
+                                    value={reply}
+                                    onChange={(e) => setReply(e.target.value)}
+                                    rows={2}
+                                    placeholder="Type your reply..."
+                                    className="w-full pl-4 pr-16 py-2 rounded-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                                />
+                                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-white hover:bg-primary-dark disabled:bg-gray-400" disabled={!reply.trim()}>
+                                    <SendIcon className="w-5 h-5" />
+                                </button>
+                            </form>
+                        </div>
+                    )}
                 </div>
-                <div className="border-t border-b border-gray-200 py-4 space-y-3 max-h-64 overflow-y-auto">
-                    {currentTicket.messages.map(msg => (
-                        <div key={msg.id} className={`flex ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`p-3 rounded-lg max-w-xs lg:max-w-md ${msg.sender === 'customer' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-800'}`}>
-                                <p className="text-sm">{msg.text}</p>
-                                <p className="text-xs text-right opacity-70 mt-1">{new Date(msg.timestamp).toLocaleTimeString()}</p>
+
+                {/* Details Panel */}
+                <div className="lg:col-span-1">
+                    <Card title="Ticket Details">
+                        <div className="space-y-3 text-sm">
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500 font-medium">Status</span>
+                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(currentTicket.status)}`}>
+                                    {currentTicket.status}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500 font-medium">Ticket ID</span>
+                                <span className="font-mono text-gray-700">#{currentTicket.id.slice(-6)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500 font-medium">Complaint Type</span>
+                                <span className="text-gray-700 font-semibold">{currentTicket.complaintType}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-500 font-medium">Created</span>
+                                <span className="text-gray-700">{new Date(currentTicket.createdAt).toLocaleDateString()}</span>
                             </div>
                         </div>
-                    ))}
+
+                        {currentTicket.photoUrls && currentTicket.photoUrls.length > 0 && (
+                             <div className="mt-4 pt-4 border-t">
+                                <h4 className="text-sm font-medium text-gray-700 mb-2">Attachments</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {currentTicket.photoUrls.map((url, index) => (
+                                        <a key={index} href={url} target="_blank" rel="noopener noreferrer">
+                                            <img src={url} alt={`Attachment ${index + 1}`} className="rounded-md object-cover w-full h-20 border hover:opacity-80" />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </Card>
                 </div>
-                {currentTicket.status !== 'Closed' && (
-                    <form onSubmit={handleReply}>
-                        <textarea
-                            value={reply}
-                            onChange={(e) => setReply(e.target.value)}
-                            rows={3}
-                            placeholder="Type your reply..."
-                            className="w-full p-2 border rounded bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary"
-                        />
-                        <button type="submit" className="mt-2 w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark">
-                            Send Reply
-                        </button>
-                    </form>
-                )}
             </div>
-        </Modal>
+        </div>
     );
 };
 
-const CreateTicketModal: React.FC<{ onClose: () => void; }> = ({ onClose }) => {
+const CreateTicketForm: React.FC<{ onClose: () => void; }> = ({ onClose }) => {
     const { addTicket, currentUser } = useAppContext();
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
@@ -112,11 +162,11 @@ const CreateTicketModal: React.FC<{ onClose: () => void; }> = ({ onClose }) => {
         onClose();
     };
     
-    const inputClasses = "mt-1 block w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary";
-    const readOnlyInputClasses = "mt-1 block w-full p-2 border rounded-md bg-gray-700 text-gray-300 border-gray-600 cursor-not-allowed";
+    const inputClasses = "mt-1 block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary";
+    const readOnlyInputClasses = "mt-1 block w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed";
 
     return (
-        <Modal isOpen={true} onClose={onClose} title="Create New Support Ticket">
+        <Card title="Create New Support Ticket">
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -175,11 +225,16 @@ const CreateTicketModal: React.FC<{ onClose: () => void; }> = ({ onClose }) => {
                         ))}
                     </div>
                 </div>
-                <button type="submit" className="w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark">
-                    Submit Ticket
-                </button>
+                <div className="flex justify-end items-center gap-2 pt-2">
+                    <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">
+                        Cancel
+                    </button>
+                    <button type="submit" className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark">
+                        Submit Ticket
+                    </button>
+                </div>
             </form>
-        </Modal>
+        </Card>
     );
 };
 
@@ -191,6 +246,14 @@ const Tickets: React.FC = () => {
     const userTickets = currentUser ? tickets.filter(t => t.customerId === currentUser.id) : [];
     
     const selectedTicket = selectedTicketId ? tickets.find(t => t.id === selectedTicketId) : null;
+
+    if (isCreating) {
+        return <CreateTicketForm onClose={() => setIsCreating(false)} />;
+    }
+
+    if (selectedTicket) {
+        return <TicketDetailsView ticket={selectedTicket} onBack={() => setSelectedTicketId(null)} />;
+    }
 
     return (
         <div>
@@ -250,9 +313,6 @@ const Tickets: React.FC = () => {
                 </div>
                 {userTickets.length === 0 && <div className="text-center p-8 text-gray-500">You have not created any tickets yet.</div>}
             </Card>
-
-            {selectedTicket && <TicketDetailsModal ticket={selectedTicket} onClose={() => setSelectedTicketId(null)} />}
-            {isCreating && <CreateTicketModal onClose={() => setIsCreating(false)} />}
         </div>
     );
 };

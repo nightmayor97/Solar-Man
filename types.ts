@@ -7,6 +7,7 @@ export interface User {
   nicNumber: string;
   contactNumber: string;
   email: string;
+  password?: string;
   address: string;
   installedBy: string;
   fileNumber: string;

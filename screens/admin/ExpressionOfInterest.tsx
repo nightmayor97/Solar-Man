@@ -5,15 +5,16 @@ import type { ExpressionOfInterest, User } from '../../types';
 import Modal from '../../components/Modal';
 import { CheckCircleIcon, MailIcon, KeyIcon, BanIcon } from '../../components/Icons';
 
-const ApprovalFormModal: React.FC<{
+const ApprovalForm: React.FC<{
     eoi: ExpressionOfInterest;
     onClose: () => void;
-    onApprove: (newUser: User) => void;
+    onApprove: (newUser: Omit<User, 'id' | 'role' | 'documents'>) => void;
 }> = ({ eoi, onClose, onApprove }) => {
-    const initialFormState: Omit<User, 'id' | 'role' | 'documents'> & { system: { commissioningDate: string } } = {
+    const initialFormState = {
         fullName: eoi.name,
         email: eoi.email,
         contactNumber: eoi.phone,
+        password: '',
         nicNumber: '',
         address: '',
         installedBy: 'Archnix Solar Tech',
@@ -40,48 +41,82 @@ const ApprovalFormModal: React.FC<{
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const newUser: User = {
-            id: `customer${Date.now()}`,
-            role: 'customer',
-            documents: [],
-            ...formData,
+        onApprove({
+             ...formData,
             system: {
                 ...formData.system,
                 commissioningDate: new Date(formData.system.commissioningDate).toISOString()
             }
-        };
-        onApprove(newUser);
+        });
     };
 
-    const inputClasses = "w-full p-2 border rounded bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary";
+    const inputClasses = "mt-1 w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary";
+    const labelClasses = "block text-sm font-medium text-gray-700";
 
     return (
-        <Modal isOpen={true} onClose={onClose} title="Approve & Create Customer" size="xl">
+        <Card title="Approve & Create Customer">
              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                     <h3 className="text-lg font-semibold text-secondary mb-2 border-b pb-1">Client Details (from enquiry)</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                        <input name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" className={inputClasses} required />
-                        <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email" className={inputClasses} required />
-                        <input name="contactNumber" value={formData.contactNumber} onChange={handleChange} placeholder="Contact Number" className={inputClasses} />
+                        <div>
+                            <label htmlFor="eoi-fullName" className={labelClasses}>Full Name</label>
+                            <input id="eoi-fullName" name="fullName" value={formData.fullName} onChange={handleChange} className={inputClasses} required />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-email" className={labelClasses}>Email</label>
+                            <input id="eoi-email" name="email" type="email" value={formData.email} onChange={handleChange} className={inputClasses} required />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-contact" className={labelClasses}>Contact Number</label>
+                            <input id="eoi-contact" name="contactNumber" value={formData.contactNumber} onChange={handleChange} className={inputClasses} />
+                        </div>
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-lg font-semibold text-secondary mb-2 border-b pb-1">Complete Profile</h3>
+                    <h3 className="text-lg font-semibold text-secondary mb-2 border-b pb-1">Set Password & Complete Profile</h3>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <input name="nicNumber" value={formData.nicNumber} onChange={handleChange} placeholder="NIC Number" className={inputClasses} />
-                        <textarea name="address" value={formData.address} onChange={handleChange} placeholder="Address" className={`${inputClasses} md:col-span-2`} rows={3} />
-                        <input name="installedBy" value={formData.installedBy} onChange={handleChange} placeholder="Installed By" className={inputClasses} />
-                        <input name="fileNumber" value={formData.fileNumber} onChange={handleChange} placeholder="File Number" className={inputClasses} />
+                        <div>
+                            <label htmlFor="password" className={labelClasses}>Set Temporary Password</label>
+                            <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} className={inputClasses} required />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-nic" className={labelClasses}>NIC Number</label>
+                            <input id="eoi-nic" name="nicNumber" value={formData.nicNumber} onChange={handleChange} className={inputClasses} />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label htmlFor="eoi-address" className={labelClasses}>Address</label>
+                            <textarea id="eoi-address" name="address" value={formData.address} onChange={handleChange} className={inputClasses} rows={2} />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-installedBy" className={labelClasses}>Installed By</label>
+                            <input id="eoi-installedBy" name="installedBy" value={formData.installedBy} onChange={handleChange} className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-fileNumber" className={labelClasses}>File Number</label>
+                            <input id="eoi-fileNumber" name="fileNumber" value={formData.fileNumber} onChange={handleChange} className={inputClasses} />
+                        </div>
                     </div>
                 </div>
                 <div>
                     <h3 className="text-lg font-semibold text-secondary mb-2 border-b pb-1">System Details</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <input name="system.capacity" type="number" step="0.1" value={formData.system.capacity} onChange={handleChange} placeholder="Capacity (kW)" className={inputClasses} />
-                        <input name="system.inverterDetails" value={formData.system.inverterDetails} onChange={handleChange} placeholder="Inverter Details" className={inputClasses} />
-                        <input name="system.inverterSerialNumber" value={formData.system.inverterSerialNumber} onChange={handleChange} placeholder="Inverter S/N" className={inputClasses} />
-                        <input name="system.commissioningDate" type="date" value={formData.system.commissioningDate} onChange={handleChange} placeholder="Commissioning Date" className={inputClasses} />
+                        <div>
+                             <label htmlFor="eoi-capacity" className={labelClasses}>Capacity (kW)</label>
+                            <input id="eoi-capacity" name="system.capacity" type="number" step="0.1" value={formData.system.capacity} onChange={handleChange} className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-inverter" className={labelClasses}>Inverter Details</label>
+                            <input id="eoi-inverter" name="system.inverterDetails" value={formData.system.inverterDetails} onChange={handleChange} className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-inverter-sn" className={labelClasses}>Inverter S/N</label>
+                            <input id="eoi-inverter-sn" name="system.inverterSerialNumber" value={formData.system.inverterSerialNumber} onChange={handleChange} className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="eoi-commissioning" className={labelClasses}>Commissioning Date</label>
+                            <input id="eoi-commissioning" name="system.commissioningDate" type="date" value={formData.system.commissioningDate} onChange={handleChange} className={inputClasses} />
+                        </div>
                     </div>
                 </div>
 
@@ -90,12 +125,12 @@ const ApprovalFormModal: React.FC<{
                     <button type="submit" className="px-4 py-2 bg-primary text-white rounded">Approve & Create Account</button>
                 </div>
             </form>
-        </Modal>
+        </Card>
     );
 };
 
 const ConfirmationModal: React.FC<{
-    details: { email: string; password: string };
+    details: { email: string; password?: string };
     onClose: () => void;
 }> = ({ details, onClose }) => {
     return (
@@ -132,22 +167,21 @@ const ExpressionOfInterest: React.FC = () => {
     const { expressionsOfInterest, addUser, updateEoiStatus, addToast } = useAppContext();
     const [approvingEoi, setApprovingEoi] = useState<ExpressionOfInterest | null>(null);
     const [rejectingEoi, setRejectingEoi] = useState<ExpressionOfInterest | null>(null);
-    const [approvedUserDetails, setApprovedUserDetails] = useState<{ email: string; password: string } | null>(null);
+    const [approvedUserDetails, setApprovedUserDetails] = useState<{ email: string; password?: string } | null>(null);
 
     const pendingExpressions = useMemo(() =>
         expressionsOfInterest.filter(item => item.status === 'pending'),
         [expressionsOfInterest]
     );
 
-    const handleApprove = (newUser: User) => {
-        const tempPassword = `solarman${String(Math.floor(1000 + Math.random() * 9000))}`;
-        addUser(newUser);
+    const handleApprove = (newUserData: Omit<User, 'id' | 'role' | 'documents'>) => {
+        addUser(newUserData);
         if (approvingEoi) {
             updateEoiStatus(approvingEoi.id, 'approved');
         }
         setApprovingEoi(null);
-        setApprovedUserDetails({ email: newUser.email, password: tempPassword });
-        addToast(`Customer account for ${newUser.fullName} created.`, 'general');
+        setApprovedUserDetails({ email: newUserData.email, password: newUserData.password });
+        addToast(`Customer account for ${newUserData.fullName} created.`, 'general');
     };
 
     const handleRejectConfirm = () => {
@@ -157,6 +191,10 @@ const ExpressionOfInterest: React.FC = () => {
             setRejectingEoi(null);
         }
     };
+
+    if (approvingEoi) {
+        return <ApprovalForm eoi={approvingEoi} onClose={() => setApprovingEoi(null)} onApprove={handleApprove} />;
+    }
 
     return (
         <div>
@@ -221,7 +259,6 @@ const ExpressionOfInterest: React.FC = () => {
                  {pendingExpressions.length === 0 && <div className="text-center p-8 text-gray-500">There are no new expressions of interest to approve.</div>}
             </Card>
 
-            {approvingEoi && <ApprovalFormModal eoi={approvingEoi} onClose={() => setApprovingEoi(null)} onApprove={handleApprove} />}
             {approvedUserDetails && <ConfirmationModal details={approvedUserDetails} onClose={() => setApprovedUserDetails(null)} />}
             {rejectingEoi && (
                 <Modal isOpen={true} onClose={() => setRejectingEoi(null)} title="Confirm Rejection">

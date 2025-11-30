@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useAppContext } from '../../App';
-import { DashboardIcon, UsersIcon, TutorialIcon, ChatIcon, LogoutIcon, MenuIcon, TicketIcon, DocumentIcon, InterestIcon, BellIcon } from '../../components/Icons';
+import { DashboardIcon, UsersIcon, TutorialIcon, ChatIcon, LogoutIcon, MenuIcon, TicketIcon, DocumentIcon, InterestIcon, BellIcon, ChartIcon, BotIcon } from '../../components/Icons';
 import AdminDashboard from './Dashboard';
 import CustomerManagement from './CustomerManagement';
 import TutorialManagement from './TutorialManagement';
@@ -8,10 +9,12 @@ import AiSolutionChat from '../../components/AiSolutionChat';
 import TicketManagement from './TicketManagement';
 import DocumentUpload from './DocumentUpload';
 import ExpressionOfInterest from './ExpressionOfInterest';
+import Reports from './Reports';
+import GeminiPage from './GeminiPage';
 import NotificationPanel from '../../components/NotificationPanel';
 import type { Notification } from '../../types';
 
-type AdminView = 'dashboard' | 'customers' | 'tickets' | 'documents' | 'tutorials' | 'ai-chat' | 'interest';
+type AdminView = 'dashboard' | 'customers' | 'tickets' | 'documents' | 'tutorials' | 'ai-chat' | 'interest' | 'reports' | 'gemini';
 
 const NavItem: React.FC<{ icon: React.ReactNode; label: string; active: boolean; onClick: () => void }> = ({ icon, label, active, onClick }) => (
     <li
@@ -77,6 +80,8 @@ const AdminLayout: React.FC = () => {
             case 'tutorials': return <TutorialManagement />;
             case 'ai-chat': return <AiSolutionChat />;
             case 'interest': return <ExpressionOfInterest />;
+            case 'reports': return <Reports />;
+            case 'gemini': return <GeminiPage />;
             default: return <AdminDashboard />;
         }
     };
@@ -86,8 +91,10 @@ const AdminLayout: React.FC = () => {
         { id: 'customers', icon: <UsersIcon className="w-5 h-5" />, label: 'Customer Management' },
         { id: 'interest', icon: <InterestIcon className="w-5 h-5" />, label: 'Expression of Interest' },
         { id: 'tickets', icon: <TicketIcon className="w-5 h-5" />, label: 'Ticket Management' },
+        { id: 'reports', icon: <ChartIcon className="w-5 h-5" />, label: 'Reports' },
         { id: 'documents', icon: <DocumentIcon className="w-5 h-5" />, label: 'Document Upload' },
         { id: 'tutorials', icon: <TutorialIcon className="w-5 h-5" />, label: 'Tutorial Management' },
+        { id: 'gemini', icon: <BotIcon className="w-5 h-5" />, label: 'Gemini Tools' },
         { id: 'ai-chat', icon: <ChatIcon className="w-5 h-5" />, label: 'AI Chat Assistant' },
     ];
 
@@ -162,7 +169,7 @@ const AdminLayout: React.FC = () => {
                         </div>
                     </div>
                 </header>
-                <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+                <main className="flex-1 p-4 sm:p-6 overflow-y-auto relative">
                     {renderView()}
                 </main>
             </div>

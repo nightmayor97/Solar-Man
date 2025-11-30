@@ -80,11 +80,11 @@ const TutorialManagement: React.FC = () => {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Title</label>
-                                <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="mt-1 block w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary" required />
+                                <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary" required />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">YouTube URL</label>
-                                <input type="text" value={url} onChange={e => setUrl(e.target.value)} className="mt-1 block w-full p-2 border rounded-md bg-secondary-dark text-white border-secondary placeholder-gray-300 focus:ring-primary focus:border-primary" placeholder="https://www.youtube.com/watch?v=..." required />
+                                <input type="text" value={url} onChange={e => setUrl(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:ring-primary focus:border-primary" placeholder="https://www.youtube.com/watch?v=..." required />
                             </div>
                             <div className="flex space-x-2">
                                 <button type="submit" className="flex-1 px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-colors">
